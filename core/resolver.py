@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 from typing import Any
 
@@ -37,7 +38,12 @@ async def check_resolution(slug: str) -> tuple[str | None, bool]:
     market = data[0]
     try:
         outcomes = market["outcomes"]
-        prices = [float(p) for p in market["outcomePrices"]]
+        if isinstance(outcomes, str):
+            outcomes = json.loads(outcomes)
+        prices_raw = market["outcomePrices"]
+        if isinstance(prices_raw, str):
+            prices_raw = json.loads(prices_raw)
+        prices = [float(p) for p in prices_raw]
     except (KeyError, ValueError, IndexError):
         log.exception("Parse error for slug=%s", slug)
         return None, False

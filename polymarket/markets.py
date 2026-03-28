@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import json
 import math
 from datetime import datetime, timezone, timedelta
 from typing import Any
@@ -119,13 +120,22 @@ async def get_slot_prices(slug: str) -> dict[str, Any] | None:
     market = data[0]
 
     try:
-        outcomes = market["outcomes"]
+        outcomes_raw = market["outcomes"]
         prices_raw = market["outcomePrices"]
         token_ids_raw = market["clobTokenIds"]
 
+        # Gamma API may return these fields as JSON-encoded strings
+        # e.g. "[\"Up\",\"Down\"]" instead of ["Up","Down"]
+        if isinstance(outcomes_raw, str):
+            outcomes_raw = json.loads(outcomes_raw)
+        if isinstance(prices_raw, str):
+            prices_raw = json.loads(prices_raw)
+        if isinstance(token_ids_raw, str):
+            token_ids_raw = json.loads(token_ids_raw)
+
         # outcomes = ["Up", "Down"] — map by name to be safe
-        up_idx = outcomes.index("Up")
-        down_idx = outcomes.index("Down")
+        up_idx = outcomes_raw.index("Up")
+        down_idx = outcomes_raw.index("Down")
 
         prices = [float(p) for p in prices_raw]
         token_ids = [str(t) for t in token_ids_raw]
