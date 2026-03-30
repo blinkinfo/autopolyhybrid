@@ -92,3 +92,17 @@ def back_to_menu() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("\U0001f519 Back to Menu", callback_data="cmd_menu")],
     ])
+
+
+# ---------------------------------------------------------------------------
+# Download keyboard
+# ---------------------------------------------------------------------------
+
+def download_keyboard() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("\U0001f4e5 Download CSV", callback_data="download_csv"),
+            InlineKeyboardButton("\U0001f4e5 Download Excel", callback_data="download_xlsx"),
+        ],
+        [InlineKeyboardButton("\U0001f519 Back to Menu", callback_data="cmd_menu")],
+    ])

@@ -342,3 +342,15 @@ async def get_trade_stats(limit: int | None = None) -> dict[str, Any]:
         "roi_pct": round(roi_pct, 1),
         **streaks,
     }
+
+
+async def get_all_signals_for_export() -> list[dict[str, Any]]:
+    """Return all non-skipped signals ordered by id for CSV/Excel export."""
+    async with aiosqlite.connect(_db()) as db:
+        db.row_factory = aiosqlite.Row
+        cursor = await db.execute(
+            "SELECT id, slot_start, side, entry_price, is_win "
+            "FROM signals WHERE skipped = 0 ORDER BY id ASC"
+        )
+        rows = await cursor.fetchall()
+        return [dict(r) for r in rows]
